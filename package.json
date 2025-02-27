@@ -1,0 +1,22 @@
+{
+  "name": "react-mapbox",
+  "version": "1.0.0",
+  "description": "this is lib containg utility function for mapbox",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/syngenta-digital/package-react-mapbox-ui.git"
+  },
+  "keywords": [
+    "react-mapbox"
+  ],
+  "author": "jitendra patel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/syngenta-digital/package-react-mapbox-ui/issues"
+  },
+  "homepage": "https://github.com/syngenta-digital/package-react-mapbox-ui#readme"
+}
