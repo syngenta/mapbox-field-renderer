@@ -1,10 +1,9 @@
+import { Geometry } from "geojson";
+
 interface GeoJson {
     geojson: {
       type: string;
-      geometry: {
-        type: string;
-        coordinates: any[];
-      };
+      geometry:Geometry
     };
   }
 
@@ -124,10 +123,6 @@ export interface NewTrialType {
     is_exportable: boolean;
   }
 
-  type Geometry = {
-    type: "Polygon";
-    coordinates: number[][][]; // Array of arrays of arrays of numbers
-};
 
 export type Field = {
     created_at: string;
