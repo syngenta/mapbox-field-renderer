@@ -65,15 +65,15 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            NPM_TOKEN=$FURY_AUTH yarn install
+            NPM_TOKEN=$FURY_AUTH npm install
       - run:
           name: Run lint
           command: |
-            NPM_TOKEN=$FURY_AUTH yarn lint
+            NPM_TOKEN=$FURY_AUTH npm lint
       - run:
           name: Run Jest and Collect Coverage Reports
           command: |
-            NPM_TOKEN=$FURY_AUTH yarn test --ci --runInBand             
+            NPM_TOKEN=$FURY_AUTH npm test --ci --runInBand             
       - store_test_results:
           path: ./reports/
           when: always
@@ -91,7 +91,7 @@ jobs:
       - run :
           name: Install Dependencies
           command: |
-            NPM_TOKEN=$FURY_AUTH yarn install
+            NPM_TOKEN=$FURY_AUTH npm install
       - run :
           name: Build package
           command: |
