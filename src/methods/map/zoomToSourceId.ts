@@ -19,28 +19,14 @@ export function zoomToSourceId(map: mapboxgl.Map|null, sourceId: string): void {
     }
 
     const coordinates = data.features.reduce((acc, feature) => {
-        switch (feature.geometry.type) {
-            case 'Point':
-                acc.push(feature.geometry.coordinates as [number, number]);
-                break;
-            case 'Polygon':
-                acc.push(...(feature.geometry.coordinates[0] as [number, number][]));
-                break;
-            case 'MultiPolygon':
-                feature.geometry.coordinates.forEach(polygon => {
-                    acc.push(...(polygon[0] as [number, number][]));
-                });
-                break;
-            case 'LineString':
-                acc.push(...(feature.geometry.coordinates as [number, number][]));
-                break;
-            case 'MultiLineString':
-                feature.geometry.coordinates.forEach(line => {
-                    acc.push(...(line as [number, number][]));
-                });
-                break;
-            default:
-                console.warn(`Unsupported geometry type: ${feature.geometry.type}`);
+        if (feature.geometry.type === 'Point') {
+            acc.push(feature.geometry.coordinates as [number, number]);
+        } else if (feature.geometry.type === 'Polygon') {
+            acc.push(...(feature.geometry.coordinates[0] as [number, number][]));
+        } else if (feature.geometry.type === 'MultiPolygon') {
+            feature.geometry.coordinates.forEach(polygon => {
+                acc.push(...(polygon[0] as [number, number][]));
+            });
         }
         return acc;
     }, [] as [number, number][]);

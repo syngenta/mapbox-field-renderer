@@ -19,12 +19,6 @@ export const addBufferZoneToMap = (
     { units: "kilometers" }
   );
   if (buffered) {
-    if (map.current?.getLayer("buffer-zone-outline")) {
-      map.current.removeLayer("buffer-zone-outline");
-    }
-    if (map.current?.getSource("buffer-zone")) {
-      map.current.removeSource("buffer-zone");
-    }
     addGeoJsonSource(map, "buffer-zone", buffered.geometry);
     addLineLayer(
       map,

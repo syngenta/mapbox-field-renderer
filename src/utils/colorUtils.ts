@@ -154,7 +154,6 @@ export const getColorForBiologicals = (treated: boolean) => {
 };
 
 export const getColorForFertilisers = (rates: number[], rate: number) => {
-    console.log("rates", rates, rate);
   const average = rates.reduce((sum, r) => sum + r, 0) / rates.length;
 
   if (rate === average) return blueColorShade[50];
@@ -189,7 +188,6 @@ const getRandomColor = () => {
 };
 
 export const getColorForPlot = (plot: any, index: number, selectedProperty: string,selectedApplication:number=0) => {
-  console.log("getting color for the plot",plot, index, selectedProperty,selectedApplication);
   let colorNew = getRandomColor();
   if (selectedProperty === "seeds") {
     const rates = plot.properties.seeds.rates_and_dosages.map((d: any) => d.rate);

@@ -154,7 +154,6 @@ export const getColorForBiologicals = (treated: boolean) => {
 };
 
 export const getColorForFertilisers = (rates: number[], rate: number) => {
-    console.log("rates", rates, rate);
   const average = rates.reduce((sum, r) => sum + r, 0) / rates.length;
 
   if (rate === average) return blueColorShade[50];
