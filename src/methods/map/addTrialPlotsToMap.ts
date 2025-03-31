@@ -3,6 +3,7 @@ import * as turf from "@turf/turf";
 import { MultiPolygon } from "geojson";
 import { getColorForPlot } from "../../utils/colorUtils";
 import type { NewTrialType } from "../../types";
+import { addLabelToSource } from "../layers/addLabelToSource";
 
 export const addMultiPolygonSourceWithMarker = (
   map: React.MutableRefObject<mapboxgl.Map | null>,
@@ -23,6 +24,17 @@ export const addMultiPolygonSourceWithMarker = (
   if (map.current.getLayer(sourceId)) {
     map.current.removeLayer(sourceId);
   }
+
+   // Remove existing layers first
+   if (map.current.getLayer(`${sourceId}-label`)) {
+    map.current.removeLayer(`${sourceId}-label`);
+  }
+
+    // Remove existing layers first
+    if (map.current.getLayer(`${sourceId}-label-plotName`)) {
+      map.current.removeLayer(`${sourceId}-label-plotName`);
+    }
+
   if (map.current.getLayer(`${sourceId}-outline`)) {
     map.current.removeLayer(`${sourceId}-outline`);
   }
@@ -49,6 +61,7 @@ export const addMultiPolygonSourceWithMarker = (
           selectedApplication
         ),
         description: `${sourceId}-${index}`,
+        label:index+1,
       },
     })),
   };
@@ -67,6 +80,27 @@ export const addMultiPolygonSourceWithMarker = (
     paint: {
       "fill-color": ["get", "color"],
       "fill-opacity": fillOpacity,
+    },
+  });
+ const groupLabel = +(sourceId.split("-")?.[ sourceId.split("-").length - 1 ]);
+
+  addLabelToSource(map, sourceId,`${String.fromCharCode(65 + groupLabel) }`, "top", 0, 'group', 14);
+ 
+
+  map.current!.addLayer({
+    id: `${sourceId}-label`,
+    type: "symbol",
+    source: sourceId,
+    layout: {
+      "text-field": ["get", "label"],
+      "text-size": 12,
+      "text-offset": [0, 0],
+      "text-anchor": "top",
+    },
+    paint: {
+      "text-color": "white",
+      "text-halo-color": "black",
+      "text-halo-width": 1,
     },
   });
 
