@@ -150,7 +150,7 @@ export const getColorForSeeds = (rates: number[], rate: number, varietyIndex: nu
 };
 
 export const getColorForBiologicals = (treated: boolean) => {
-  return treated ? blueColorShade[50] : "transparent";
+  return treated ? blueColorShade[50] : "#DFE2E7";
 };
 
 export const getColorForFertilisers = (rates: number[], rate: number) => {
@@ -187,7 +187,7 @@ const getRandomColor = () => {
   return color;
 };
 
-export const getColorForPlot = (plot: any, index: number, selectedProperty: string) => {
+export const getColorForPlot = (plot: any, index: number, selectedProperty: string,selectedApplication:number=0) => {
   let colorNew = getRandomColor();
   if (selectedProperty === "seeds") {
     const rates = plot.properties.seeds.rates_and_dosages.map((d: any) => d.rate);
@@ -197,7 +197,7 @@ export const getColorForPlot = (plot: any, index: number, selectedProperty: stri
     );
     colorNew = getColorForSeeds(rates, rate, varietyIndex);
   } else if (selectedProperty === "biologicals") {
-    const treated = plot.properties.biologicals?.treatments[0][index].treated ?? false;
+    const treated = plot.properties.biologicals?.treatments[selectedApplication][index].treated ?? false;
     colorNew = getColorForBiologicals(treated);
   } else if (selectedProperty === "fertilisers") {
     const rates = plot.properties.fertilisers.rates_and_dosages.map((d: any) => d.rate);
