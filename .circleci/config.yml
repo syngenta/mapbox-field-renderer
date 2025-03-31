@@ -1,0 +1,153 @@
+version: 2.1
+orbs:
+  sonarcloud: sonarsource/sonarcloud@2.0.0
+  slack: circleci/slack@4.12.5
+executors:
+  standard-executor:
+    machine:
+      image: ubuntu-2204:current
+
+commands:
+  slack_notify:
+    parameters:
+      event:
+        type: string
+      message:
+        type: string
+    steps: 
+      - slack/notify:
+          event: << parameters.event >>
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "divider"
+                },
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "<<parameters.message>>",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Author: *${CIRCLE_USERNAME}*"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Build Url: ${CIRCLE_BUILD_URL}"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "@here"
+                  }
+                }
+              ]
+            }
+
+
+jobs:
+  sonarcloudanalyze:
+    docker:
+      - image: node:18
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            NPM_TOKEN=$FURY_AUTH npm install
+      - run:
+          name: Run lint
+          command: |
+            NPM_TOKEN=$FURY_AUTH npm lint
+      - run:
+          name: Run Jest and Collect Coverage Reports
+          command: |
+            NPM_TOKEN=$FURY_AUTH npm test --ci --runInBand             
+      - store_test_results:
+          path: ./reports/
+          when: always
+      - sonarcloud/scan
+
+  pack_and_push_tag:
+    machine:
+      image: ubuntu-2204:current
+    steps:
+      - checkout
+      - run:
+          name: Detect Version Number
+          command: |
+            echo $CIRCLE_TAG$CIRCLE_BRANCH | cut -d/ -f2 > DYNAMIC_VERSION
+      - run :
+          name: Install Dependencies
+          command: |
+            NPM_TOKEN=$FURY_AUTH npm install
+      - run :
+          name: Build package
+          command: |
+            sed -i -e "s!DYNAMIC_VERSION!$(cat DYNAMIC_VERSION)!" package.json
+            cat package.json
+            mkdir -p packages
+            NPM_TOKEN=$FURY_AUTH npm build
+            NPM_TOKEN=$FURY_AUTH npm pack -o packages/syngenta-digital-react-mapbox-ui.tgz
+      - run :
+          name: Publish package
+          command: |
+            echo Publishing version $(cat DYNAMIC_VERSION)
+            curl -ivF 'package=@packages/syngenta-digital-react-mapbox-ui.tgz' "https://${FURY_PUSH_TOKEN}@push.fury.io/syngenta-digital/"
+      - store_artifacts:
+          name: "Save the built package."
+          path: ./packages/
+          when: always
+      - slack_notify:
+          event: fail
+          message: ":sadpepe: package-react-mapbox-ui | $(cat DYNAMIC_VERSION) has failed to publish"
+      - slack_notify:
+          event: pass
+          message: ":rocket-animated: package-react-mapbox-ui | $(cat DYNAMIC_VERSION) has been published successfully"
+
+workflows:
+  version: 2.1
+  Code quality:
+    jobs:
+      - sonarcloudanalyze:
+          context:
+            - cropwise-seed-cicd
+            - cropwise-trialing-cicd
+            - shared-sonarcloud-token
+            - shared-gemfury-tokens
+          filters:
+            tags:
+              only:
+                - /.*/
+            branches:
+              only:
+                - /.*/
+  
+
+  pack_and_push_tag:
+    jobs:
+      - pack_and_push_tag:
+          context:
+            - cropwise-seed-cicd
+            - cropwise-trialing-cicd
+            - shared-sonarcloud-token
+            - shared-gemfury-tokens
+          filters:
+            branches:
+              only:
+                - /ci\/.*/
+            tags:
+              only:
+                - /release\/.*/
+
