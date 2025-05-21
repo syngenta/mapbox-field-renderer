@@ -1,4 +1,5 @@
 import mapboxgl from 'mapbox-gl';
+import bbox from '@turf/bbox';
 
 /**
  * Zooms the map to fit the given source ID.
@@ -18,29 +19,33 @@ export function zoomToSourceId(map: mapboxgl.Map|null, sourceId: string): void {
         return;
     }
 
-    const coordinates = data.features.reduce((acc, feature) => {
-        if (feature.geometry.type === 'Point') {
-            acc.push(feature.geometry.coordinates as [number, number]);
-        } else if (feature.geometry.type === 'Polygon') {
-            acc.push(...(feature.geometry.coordinates[0] as [number, number][]));
-        } else if (feature.geometry.type === 'MultiPolygon') {
-            feature.geometry.coordinates.forEach(polygon => {
-                acc.push(...(polygon[0] as [number, number][]));
-            });
-        }
-        return acc;
-    }, [] as [number, number][]);
+    try {
+        const boundingBox = bbox(data); // Calculate the bounding box using Turf.js
+        map?.fitBounds(boundingBox as [number, number, number, number], {
+            padding: 20
+        });
+    } catch (error) {
+        console.error(`Error calculating bounding box for source with ID ${sourceId}:`, error);
+    }
+}
 
-    if (coordinates.length === 0) {
-        console.error(`No valid coordinates found in source with ID ${sourceId}.`);
+export function zoomToGeoJson(map: mapboxgl.Map|null, geoJson: GeoJSON.Geometry): void {
+    if (!map) {
+        console.error('Map instance is not provided.');
         return;
     }
 
-    const bounds = coordinates.reduce((bounds, coord) => {
-        return bounds.extend(coord);
-    }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
+    if (!geoJson || !geoJson.type || (geoJson.type !== 'GeometryCollection' && !('coordinates' in geoJson))) {
+        console.error('Invalid GeoJSON object provided.');
+        return;
+    }
 
-    map?.fitBounds(bounds, {
-        padding: 20
-    });
+    try {
+        const boundingBox = bbox(geoJson); // Calculate the bounding box using Turf.js
+        map.fitBounds(boundingBox as [number, number, number, number], {
+            padding: 40
+        });
+    } catch (error) {
+        console.error('Error calculating bounding box for the provided GeoJSON object:', error);
+    }
 }

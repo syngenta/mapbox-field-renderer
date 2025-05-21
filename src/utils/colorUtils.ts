@@ -124,7 +124,7 @@ export const blueColorShade = {
   
 
 export const getColorForSeeds = (rates: number[], rate: number, varietyIndex: number) => {
-  const colorShade = colorMatrix[varietyIndex % colorMatrix.length];
+  const colorShade = colorMatrix[varietyIndex % colorMatrix.length]??[];
   const average = rates.reduce((sum, r) => sum + r, 0) / rates.length;
 
   if (rate === average) return colorShade[50];
@@ -187,22 +187,24 @@ const getRandomColor = () => {
   return color;
 };
 
-export const getColorForPlot = (plot: any, index: number, selectedProperty: string,selectedApplication:number=0) => {
+export const getColorForPlot = (plot: any, index: number, selectedProperty: string, selectedApplication: number = 0) => {
   let colorNew = getRandomColor();
+
   if (selectedProperty === "seeds") {
-    const rates = plot.properties.seeds.rates_and_dosages.map((d: any) => d.rate);
-    const rate = plot.properties.seeds.rates_and_dosages[index].rate;
-    const varietyIndex = plot.properties.seeds.rates_and_dosages.findIndex(
-      (d: any) => d.variety === plot.properties.seeds.rates_and_dosages[index].variety
-    );
+    const rates = plot?.properties?.seeds?.rates_and_dosages?.map((d: any) => d.rate) ?? [];
+    const rate = plot?.properties?.seeds?.rates_and_dosages?.[index]?.rate ?? 0;
+    const varietyIndex = plot?.properties?.seeds?.rates_and_dosages?.findIndex(
+      (d: any) => d.variety === plot?.properties?.seeds?.rates_and_dosages?.[index]?.variety
+    ) ?? 0;
     colorNew = getColorForSeeds(rates, rate, varietyIndex);
   } else if (selectedProperty === "biologicals") {
-    const treated = plot.properties.biologicals?.treatments[selectedApplication][index].treated ?? false;
+    const treated = plot?.properties?.biologicals?.treatments?.[selectedApplication]?.[index]?.treated ?? false;
     colorNew = getColorForBiologicals(treated);
   } else if (selectedProperty === "fertilisers") {
-    const rates = plot.properties.fertilisers.rates_and_dosages.map((d: any) => d.rate);
-    const rate = plot.properties.fertilisers.rates_and_dosages[index].rate;
+    const rates = plot?.properties?.fertilisers?.rates_and_dosages?.map((d: any) => d.rate) ?? [];
+    const rate = plot?.properties?.fertilisers?.rates_and_dosages?.[index]?.rate ?? 0;
     colorNew = getColorForFertilisers(rates, rate);
   }
+
   return colorNew;
 };

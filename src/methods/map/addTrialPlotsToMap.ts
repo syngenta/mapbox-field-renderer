@@ -130,13 +130,14 @@ export const addTrialPlotsToMap = (
   fillOpacity: number = 0.8,
   lineColor: string = "#ffffff",
   lineWidth: number = 1,
-  replicantLineDashArray: number[] = [2, 2]
+  replicantLineDashArray: number[] = [2, 2],
+  prefix: string = "",
 ) => {
   if (!map.current) return;
 
   trialPlots.forEach((plot, plotIndex: number) => {
     // Add main plot
-    const mainPlotSourceId = `plot-${plotIndex}`;
+    const mainPlotSourceId = `${prefix}plot-${plotIndex}`;
     addMultiPolygonSourceWithMarker(
       map,
       mainPlotSourceId,
@@ -150,28 +151,30 @@ export const addTrialPlotsToMap = (
     );
 
     // Add replicants
-    const replicantCoordinates: MultiPolygon["coordinates"] = [];
-    plot.replicants?.forEach((replicant) => {
+   
+    plot.replicants?.forEach((replicant,rindex) => {
+      const replicantCoordinates: MultiPolygon["coordinates"] = [];
       replicantCoordinates.push(
         ...(replicant.geojson.geometry as MultiPolygon).coordinates
       );
+      if (replicantCoordinates.length > 0) {
+        const replicantSourceId = `${prefix}replicant-plot-${rindex}-${plotIndex}`;
+        addMultiPolygonSourceWithMarker(
+          map,
+          replicantSourceId,
+          replicantCoordinates,
+          plot,
+          selectedProperty,
+          selectedApplication,
+          fillOpacity,
+          lineColor,
+          lineWidth,
+          true,
+          replicantLineDashArray
+        );
+      }
     });
 
-    if (replicantCoordinates.length > 0) {
-      const replicantSourceId = `replicant-plot-${plotIndex}`;
-      addMultiPolygonSourceWithMarker(
-        map,
-        replicantSourceId,
-        replicantCoordinates,
-        plot,
-        selectedProperty,
-        selectedApplication,
-        fillOpacity,
-        lineColor,
-        lineWidth,
-        true,
-        replicantLineDashArray
-      );
-    }
+   
   });
 };
