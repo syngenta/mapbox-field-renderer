@@ -9,7 +9,8 @@ export const addBufferZoneToMap = (
   bufferZone: { type: "INTERNAL" | "EXTERNAL"; size: number },
   lineColor: string = "#ffffff",
   lineWidth: number = 2,
-  lineDashArray: number[] = [2, 2]
+  lineDashArray: number[] = [2, 2],
+  prefix: string = "",
 ) => {
   const fieldPolygon = turf.polygon(geometry.coordinates);
   const bufferDistance = bufferZone.size / 1000; // Convert meters to kilometers
@@ -19,11 +20,14 @@ export const addBufferZoneToMap = (
     { units: "kilometers" }
   );
   if (buffered) {
-    addGeoJsonSource(map, "buffer-zone", buffered.geometry);
+    if (map.current!.getLayer(`${prefix}buffer-zone-outline`)) {
+      map.current!.removeLayer(`${prefix}buffer-zone-outline`);
+    }
+    addGeoJsonSource(map, `${prefix}buffer-zone`, buffered.geometry);
     addLineLayer(
       map,
-      "buffer-zone-outline",
-      "buffer-zone",
+      `${prefix}buffer-zone-outline`,
+      `${prefix}buffer-zone`,
       lineColor,
       lineWidth,
       lineDashArray

@@ -9,9 +9,10 @@ export const addFieldPolygonToMap = (
   fillColor: string = "#088",
   fillOpacity: number = 0.3,
   lineColor: string = "#ffffff",
-  lineWidth: number = 2
+  lineWidth: number = 2,
+  prefix: string = "",
 ) => {
-  addGeoJsonSource(map, "polygon", geometry);
-  addFillLayer(map, "polygon", fillColor, fillOpacity);
-  addLineLayer(map, "polygon-outline", "polygon", lineColor, lineWidth);
+  addGeoJsonSource(map, `${prefix}polygon`, geometry);
+  addFillLayer(map, `${prefix}polygon`, fillColor, fillOpacity);
+  addLineLayer(map, `${prefix}polygon-outline`, `${prefix}polygon`, lineColor, lineWidth);
 };
