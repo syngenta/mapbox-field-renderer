@@ -2,6 +2,8 @@
   "name": "@syngenta/mapbox-field-renderer",
   "version": "0.0.1",
   "type": "module",
+  "types": "./dist/types/index.d.ts",
+  "main": "./dist/index.js",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -53,7 +55,9 @@
       "default": "./dist/index.js"
     }
   },
-  "types": "./dist/types/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "eslintConfig": {
     "extends": [
       "plugin:storybook/recommended"
