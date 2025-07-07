@@ -97,6 +97,8 @@ export const blueColorShade = {
     80: "#909",
     90: "#606",
   };
+
+  export const transparentColor = 'transparent';
   
   export const limeColorShade = {
     20: "#F7FFD1",
@@ -127,6 +129,8 @@ export const getColorForSeeds = (rates: number[], rate: number, varietyIndex: nu
   const colorShade = colorMatrix[varietyIndex % colorMatrix.length];
   const average = rates.reduce((sum, r) => sum + r, 0) / rates.length;
 
+  if(rate === 0){ return transparentColor; }
+
   if (rate === average) return colorShade[50];
 
   if (rate < average) {
@@ -150,7 +154,7 @@ export const getColorForSeeds = (rates: number[], rate: number, varietyIndex: nu
 };
 
 export const getColorForBiologicals = (treated: boolean) => {
-  return treated ? blueColorShade[50] : "transparent";
+  return treated ? blueColorShade[50] : transparentColor;
 };
 
 export const getColorForFertilisers = (rates: number[], rate: number) => {
