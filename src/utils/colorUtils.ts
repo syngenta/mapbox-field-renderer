@@ -191,12 +191,14 @@ export const getColorForPlot = (plot: any, index: number, selectedProperty: stri
   let colorNew = getRandomColor();
 
   if (selectedProperty === "seeds") {
-    const rates = plot?.properties?.seeds?.rates_and_dosages?.map((d: any) => d.rate) ?? [];
-    const rate = plot?.properties?.seeds?.rates_and_dosages?.[index]?.rate ?? 0;
-    const varietyIndex = plot?.properties?.seeds?.rates_and_dosages?.findIndex(
-      (d: any) => d.variety === plot?.properties?.seeds?.rates_and_dosages?.[index]?.variety
-    ) ?? 0;
-    colorNew = getColorForSeeds(rates, rate, varietyIndex);
+    const rates = plot.properties.seeds.rates_and_dosages.map((d: any) => d.rate);
+      const varieties:any = {};
+      plot.properties.seeds.rates_and_dosages.map((d: any) => varieties[d.variety]=true );
+      const rate = plot.properties.seeds.rates_and_dosages[index].rate;
+      const varietyIndex = Object.keys(varieties).indexOf(
+        plot.properties.seeds.rates_and_dosages[index].variety
+      );
+      colorNew = getColorForSeeds(rates, rate, varietyIndex);
   } else if (selectedProperty === "biologicals") {
     const treated = plot?.properties?.biologicals?.treatments?.[selectedApplication]?.[index]?.treated ?? false;
     colorNew = getColorForBiologicals(treated);
