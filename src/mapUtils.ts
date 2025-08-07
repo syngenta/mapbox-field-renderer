@@ -1,7 +1,7 @@
 export { initializeMap } from "./methods/map/initializeMap";
 export { addFieldPolygonToMap } from "./methods/map/addFieldPolygonToMap";
 export { addBufferZoneToMap } from "./methods/map/addBufferZoneToMap";
-export { addTrialPlotsToMap } from "./methods/map/addTrialPlotsToMap";
+export { addTrialPlotsToMap, addLabelToMap } from "./methods/map/addTrialPlotsToMap";
 export { updateMapWithSelectedProperty } from "./methods/map/updateMapWithSelectedProperty";
 export { getAllLayers } from "./methods/map/getAllLayers";
 export { addGeoJsonSource } from "./methods/layers/addGeoJsonSource";
